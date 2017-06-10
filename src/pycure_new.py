@@ -113,16 +113,22 @@ class Cure:
             for point in merged_cluster:
                if  i == 1:
                 minDist=distance_func(point,merged_cluster.center)
-               else:
-                
-               ## minDist= min(distance_func(point,pointQ),tmpSet.point 
-                if minDist>=maxDist:
-                    maxDist=minDist
+               else:     
+                for pointQ in tmpSet:
+                    tmpDist= distance_func(point,pointQ)
+                    if minDist>= tmpDist:
+                        minDist=tmpDist
+
+                if minDist >= maxDist:
+                    maxDist = minDist
                     maxPoint=pointQ
 
             tmpSet.point[len(tmpSet.point)]=maxPoint
            
+        alpha=0.5
         for point in tmpSet:
+            #Smaller alpha shrinks the scattered points and favors elongated clusters
+            #large alph-> scattered points get closer to mean,  cluster tend to be more compact
             merged_cluster.rep[len(merged_cluster.rep)]=point+(merged_cluster.center-point)*alpha
    
         return merged_cluster
