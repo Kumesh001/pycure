@@ -24,13 +24,13 @@ class Cluster:
 
 
 class Cure:
-    def __init__(self, data, number_of_clusters):
+    def __init__(self, data, number_of_clusters, alpha):
 
         # data is a Numpy-array with rows as points and k
         # is the number of clusters
         self.data = data
         self.k = number_of_clusters
-
+        self.alpha = alpha
         # Stores representatives for each cluster
         self.KDTree = KDTree(data)
 
@@ -125,11 +125,10 @@ class Cure:
 
             tmpSet.point[len(tmpSet.point)]=maxPoint
            
-        alpha=0.5
         for point in tmpSet:
             #Smaller alpha shrinks the scattered points and favors elongated clusters
             #large alph-> scattered points get closer to mean,  cluster tend to be more compact
-            merged_cluster.rep[len(merged_cluster.rep)]=point+(merged_cluster.center-point)*alpha
+            merged_cluster.rep[len(merged_cluster.rep)]=point+(merged_cluster.center-point)*self.alpha
    
         return merged_cluster
 
