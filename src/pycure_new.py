@@ -80,7 +80,7 @@ class Cure:
                     cluster_w.closest = cluster
                     cluster_w.distance_closest = dist
 
-                if ((cluster.closest is cluster_u or (cluster.closest is cluster_v)):
+                if ((cluster.closest is cluster_u) or (cluster.closest is cluster_v)):
 
                     if(cluster.distance_closest < dist):
                         # get closest element to cluster with maximum distance
