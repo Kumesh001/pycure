@@ -127,7 +127,7 @@ class Cure:
         merged_cluster.center = (len(cluster1.points) * cluster1.center + len(cluster2.points) * cluster2.center) / (
         len(cluster1.points) + len(cluster2.points))
         tmpSet = []
-        merged_cluster.rep = np.matrix("")
+        merged_cluster.rep = np.empty(shape=(0, self.shape[1]))
         for i in range(0, self.c):
             maxDist = 0
             maxPoint = []
