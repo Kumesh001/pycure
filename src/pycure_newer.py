@@ -140,8 +140,8 @@ class Cure:
                     maxDist = minDist
                     maxPoint = point
 
-            # f(np.where(tmpSet==maxPoint).all(axis=1)) :
-            tmpSet.append(maxPoint)
+            if not any((maxPoint == x).all() for x in tmpSet):
+            	tmpSet.append(maxPoint)
 
         for i in xrange(0, len(tmpSet)):
             # Smaller alpha shrinks the scattered points and favors elongated clusters
@@ -173,7 +173,6 @@ class Cure:
             for point in clusterz.rep:
                 if (np.array_equal(closest_rep, point)):
                     return (distance, clusterz)
-        raise error
 
     def distance_func(self, p1, p2):
         return distance.euclidean(p1, p2)
