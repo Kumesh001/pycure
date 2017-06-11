@@ -165,18 +165,23 @@ class Cure:
             query = self.KDTree.query(representative, self.c+1, 0, 2, dist)
 
         for i in range(0, self.c+1):
-            query_check = np.squeeze(np.asarray(cluster.rep))
-            merged_check = np.squeeze(np.asarray(merged_cluster.rep))
             temp_rep = self.KDTree.data[query[1][0][i]]
 
-            if (query[0][0][i] < distance and not (query_check == temp_rep).all() and not (merged_check == temp_rep).all()):
-                distance = query[0][0][i]
-                closest_rep = temp_rep
+            for point in cluster.rep:
+                tet = np.squeeze(np.asarray(point))
+                if (query[0][0][i] < distance and not (tet == temp_rep).all()):
+                    distance = query[0][0][i]
+                    closest_rep = temp_rep
 
         # for clusterz in self.Heap:
         # for point in clusterz.rep:
         # if (point == closest_rep).all():
         # return (distance, clusterz)
+        for point in merged_cluster.rep:
+            tet = np.squeeze(np.asarray(point))
+            if(tet == closest_rep).all():
+                return (distance, merged_cluster)
+
 
         for clusterz in self.Heap:
             for point in clusterz.rep:
