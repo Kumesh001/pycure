@@ -100,7 +100,7 @@ class Cure:
                     if (cluster.distance_closest < dist):
                         # get closest element to cluster with maximum distance
                         # dist TODO: check this
-                        (cluster.distance_closest, cluster.closest) = self.closest_cluster(cluster, dist)
+                        (cluster.distance_closest, cluster.closest) = self.closest_cluster(cluster, cluster_w, dist)
 
                     if (cluster.closest is None):
                         cluster.closest = cluster_w
@@ -156,7 +156,7 @@ class Cure:
         union_cluster.points=np.append(cluster1.points, cluster2.points, axis=0)
         return union_cluster
 
-    def closest_cluster(self, cluster, dist):
+    def closest_cluster(self, cluster, merged_cluster, dist):
 
         distance = dist
         closest_rep = []
@@ -165,9 +165,13 @@ class Cure:
             query = self.KDTree.query(representative, self.c+1, 0, 2, dist)
 
         for i in range(0, self.c+1):
-            if (query[0][0][i] < distance and not (np.squeeze(np.asarray(self.KDTree.data[query[1][0][i]]) == cluster.rep).all())):
-                distance = query[0][0][1]
-                closest_rep = self.KDTree.data[query[1][0][1]]
+            query_check = np.squeeze(np.asarray(cluster.rep))
+            merged_check = np.squeeze(np.asarray(merged_cluster.rep))
+            temp_rep = self.KDTree.data[query[1][0][i]]
+
+            if (query[0][0][i] < distance and not (query_check == temp_rep).all() and not (merged_check == temp_rep).all()):
+                distance = query[0][0][i]
+                closest_rep = temp_rep
 
         # for clusterz in self.Heap:
         # for point in clusterz.rep:
