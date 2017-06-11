@@ -165,13 +165,19 @@ class Cure:
             query = self.KDTree.query(representative, self.c+1, 0, 2, dist)
 
         for i in range(0, self.c+1):
-            if (query[0][0][i] < distance and not (self.KDTree.data[query[1][0][i]] == cluster.rep).all()):
+            if (query[0][0][i] < distance and not (np.squeeze(np.asarray(self.KDTree.data[query[1][0][i]]) == cluster.rep).all())):
                 distance = query[0][0][1]
                 closest_rep = self.KDTree.data[query[1][0][1]]
 
+        # for clusterz in self.Heap:
+        # for point in clusterz.rep:
+        # if (point == closest_rep).all():
+        # return (distance, clusterz)
+
         for clusterz in self.Heap:
             for point in clusterz.rep:
-                if (point == closest_rep).all():
+                tet = np.squeeze(np.asarray(point))
+                if (tet == closest_rep).all():
                     return (distance, clusterz)
 
     def distance_func(self, p1, p2):
@@ -201,8 +207,6 @@ def __load_file(path):
 
 
 if __name__ == '__main__':
-    text = "the quick brown fox jumped over the the quick brown quick log log"
-
     file_name = str(sys.argv[1])
     number_of_clusters = int(sys.argv[2])
     alpha = float(sys.argv[3])
