@@ -163,14 +163,17 @@ class Cure:
 
         for representative in cluster.rep:
             query = self.KDTree.query(representative, 2, 0, 2, dist)
+
             if (query[0][0][1] < distance):
                 distance = query[0][0][1]
                 closest_rep = self.KDTree.data[query[1][0][1]]
-
+        print closest_rep
+        print query
         for clusterz in self.Heap:
             for point in clusterz.rep:
                 if (np.array_equal(closest_rep, point)):
                     return (distance, clusterz)
+        raise error
 
     def distance_func(self, p1, p2):
         return distance.euclidean(p1, p2)
@@ -187,12 +190,12 @@ def __load_file(path):
     if data.shape == (0,):
         return np.empty((0, len(meta._attributes))), 0
     else:
-        data_matrix = np.zeros(shape=(data.shape[0], len(data[0])))
+        data_matrix = np.zeros(shape=(data.shape[0], len(data[0])-1))
 
         for i in range(len(data)):
             arff_row = data[i]
 
-            for j in range(len(arff_row) - 1):
+            for j in range(len(arff_row)-1):
                 data_matrix[i][j] = arff_row[j]
 
         return data_matrix, data.shape[0]
