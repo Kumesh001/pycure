@@ -48,8 +48,8 @@ class Cure:
         # Initializes each Clusters closest Cluster and distance using the
         # KDTree
         for cluster in data_as_clusters:
-
-            query = self.KDTree.query(cluster.points[0], 2)
+            print cluster.points[0,:].tolist()
+            query = self.KDTree.query(cluster.points[0,:], 2)
             print query
             cluster.distance_closest = query[0][1]
             cluster.closest = data_as_clusters[query[1][1]]
