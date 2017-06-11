@@ -69,18 +69,16 @@ class Cure:
             cluster_w = self.merge_cluster(cluster_u, cluster_v)
 
             # TODO: delete rep entries from kdtree and add w representative
-            tree_data = np.empty(shape=(1, self.shape[1]))
+            tree_data = np.empty(shape=(0, self.shape[1]))
 
             for cluster in self.Heap:
-                print cluster.rep
                 for rep in cluster.rep:
-                    np.concatenate((tree_data, rep))
-
-            print tree_data
-            print cluster_w.rep
+                    tree_data = np.concatenate((tree_data, rep))
 
             for rep in cluster_w.rep:
-                np.concatenate((tree_data, rep))
+                 tree_data = np.concatenate((tree_data, rep))
+    
+            print tree_data
 
             self.KDTree = KDTree(np.matrix(tree_data))
 
