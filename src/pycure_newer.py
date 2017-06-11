@@ -2,7 +2,7 @@ import numpy as np
 import sys
 from copy import deepcopy
 from scipy.io import arff
-
+import matplotlib.pyplot as plt
 from scipy.spatial import KDTree
 from scipy.spatial import distance
 
@@ -34,7 +34,7 @@ class Cure:
         self.alpha = alpha
         self.c = c
         # Stores representatives for each cluster
-        self.KDTree = KDTree(data)
+        self.KDTree = KDTree(data, leafsize = 50)
 
         self.shape = data.shape
 
@@ -68,7 +68,6 @@ class Cure:
             # merge the clusters to form a new cluster
             cluster_w = self.merge_cluster(cluster_u, cluster_v)
 
-            # TODO: delete rep entries from kdtree and add w representative
             tree_data = np.empty(shape=(0, self.shape[1]))
 
             for cluster in self.Heap:
@@ -80,7 +79,7 @@ class Cure:
 
             print tree_data
 
-            self.KDTree = KDTree(np.matrix(tree_data))
+            self.KDTree = KDTree(np.matrix(tree_data),leafsize = 50)
 
             # select arbitrary element from the heap
             cluster_w.closest = self.Heap[0]
@@ -99,7 +98,6 @@ class Cure:
 
                     if (cluster.distance_closest < dist):
                         # get closest element to cluster with maximum distance
-                        # dist TODO: check this
                         (cluster.distance_closest, cluster.closest) = self.closest_cluster(cluster, cluster_w, dist)
 
                     if (cluster.closest is None):
@@ -117,10 +115,20 @@ class Cure:
             self.Heap.append(cluster_w)
             self.Heap.sort(key=lambda x: x.distance_closest, reverse=False)
 
-        return 0
+        list_of_labels = []
+        i = 0
+        for c in self.Heap:
+            for p in c.points:
+                for row in self.data:
+                    tet = np.squeeze(np.asarray(p))
+                    if(tet == row).all():
+                        list_of_labels.append(i)
+            i+=1
+
+        return list_of_labels
+
 
     def merge_cluster(self, cluster1, cluster2):
-        # TODO: add merge function from paper
         merged_cluster = self.union_func(cluster1, cluster2)
         merged_cluster.center = (len(cluster1.points) * cluster1.center + len(cluster2.points) * cluster2.center) / (
         len(cluster1.points) + len(cluster2.points))
@@ -162,10 +170,10 @@ class Cure:
         closest_rep = []
 
         for representative in cluster.rep:
-            query = self.KDTree.query(representative, self.c+1, 0, 2, dist)
+            query = self.KDTree.query(representative, self.c+1, 0, 2)
 
         for i in range(0, self.c+1):
-            if(query[0][0][i] < distance):
+            if(query[0][0][i] < float('inf')):
                 temp_rep = self.KDTree.data[query[1][0][i]]
 
                 for point in cluster.rep:
@@ -225,5 +233,4 @@ if __name__ == '__main__':
 
     cure = Cure(data, number_of_clusters, alpha, c)
     list_of_labels = cure.cure_clustering()
-
     print(str(list_of_labels))
