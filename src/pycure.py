@@ -12,12 +12,12 @@ from scipy.spatial import distance
 
 
 class Cluster:
-    def __init__(self, point=None):
+    def __init__(self, shape, point=None):
 
         if (point is not None):
-            self.points = [point]
+            self.points = np.matrix(point)
             self.center = point
-            self.rep = [point]
+            self.rep = np.matrix(point)
 
         else:
             self.points = []
@@ -43,13 +43,14 @@ class Cure:
         self.shape = data.shape
 
         # Initializes each point as a Cluster object
-        data_as_clusters = [Cluster(point) for point in data]
+        data_as_clusters = [Cluster(self.shape, point) for point in data]
 
         # Initializes each Clusters closest Cluster and distance using the
         # KDTree
         for cluster in data_as_clusters:
-            query = self.KDTree.query(cluster.points[0], 2)
 
+            query = self.KDTree.query(cluster.points[0], 2)
+            print query
             cluster.distance_closest = query[0][1]
             cluster.closest = data_as_clusters[query[1][1]]
 
@@ -76,11 +77,15 @@ class Cure:
             tree_data = np.empty(shape=(1, self.shape[1]))
 
             for cluster in self.Heap:
+                print cluster.rep
                 for rep in cluster.rep:
                     np.concatenate((tree_data, [rep]))
 
+            print tree_data
+            print cluster_w.rep
+
             for rep in cluster_w.rep:
-                np.concatenate((tree_data, [rep]))
+                np.concatenate(tree_data, rep)
 
             self.KDTree = KDTree(np.matrix(tree_data))
 
@@ -153,7 +158,7 @@ class Cure:
         return merged_cluster
     
     def union_func(self,cluster1,cluster2):
-        union_cluster = Cluster()
+        union_cluster = Cluster(shape = self.shape)
         union_cluster.points = deepcopy(cluster1.points)
         union_cluster.points.append(cluster2.points)
         return union_cluster
@@ -209,8 +214,6 @@ if __name__ == '__main__':
     c = int(sys.argv[4])
 
     data,length = __load_file(file_name)
-
-    np.asarray(data).astype(np.float)
 
     cure = Cure(data, number_of_clusters, alpha, c)
     list_of_labels = cure.cure_clustering()
