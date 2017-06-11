@@ -16,9 +16,9 @@ class Cluster:
             self.rep = np.matrix(point)
 
         else:
-            self.points = []
+            self.points = np.empty(shape=(0, shape[1]))
             self.center = None
-            self.rep = []
+            self.rep = np.empty(shape=(0, shape[1]))
 
         self.closest = None
         self.distance_closest = float('inf')
@@ -77,7 +77,7 @@ class Cure:
 
             for rep in cluster_w.rep:
                  tree_data = np.concatenate((tree_data, rep))
-    
+
             print tree_data
 
             self.KDTree = KDTree(np.matrix(tree_data))
@@ -147,14 +147,13 @@ class Cure:
             # Smaller alpha shrinks the scattered points and favors elongated clusters
             # large alph-> scattered points get closer to mean,  cluster tend to be more compact
             # merged_cluster.rep.insert(i, (tmpSet[i] + (merged_cluster.center - tmpSet[i]) * self.alpha))
-            np.concatenate((merged_cluster.rep ,(tmpSet[i] + (merged_cluster.center - tmpSet[i]) * self.alpha)))
+            merged_cluster.rep = np.concatenate((merged_cluster.rep ,(tmpSet[i] + (merged_cluster.center - tmpSet[i]) * self.alpha)))
 
         return merged_cluster
 
     def union_func(self, cluster1, cluster2):
         union_cluster = Cluster(shape=self.shape)
-        union_cluster.points = deepcopy(cluster1.points)
-        np.append(union_cluster.points, cluster2.points, axis=0)
+        union_cluster.points=np.append(cluster1.points, cluster2.points, axis=0)
         return union_cluster
 
     def closest_cluster(self, cluster, dist):
