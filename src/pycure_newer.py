@@ -162,16 +162,16 @@ class Cure:
         closest_rep = []
 
         for representative in cluster.rep:
-            query = self.KDTree.query(representative, 2, 0, 2, dist)
+            query = self.KDTree.query(representative, self.c+1, 0, 2, dist)
 
-            if (query[0][0][1] < distance):
+        for i in range(0, self.c+1):
+            if (query[0][0][i] < distance and not (self.KDTree.data[query[1][0][i]] == cluster.rep).all()):
                 distance = query[0][0][1]
                 closest_rep = self.KDTree.data[query[1][0][1]]
-        print closest_rep
-        print query
+
         for clusterz in self.Heap:
             for point in clusterz.rep:
-                if (np.array_equal(closest_rep, point)):
+                if (point == closest_rep).all():
                     return (distance, clusterz)
 
     def distance_func(self, p1, p2):
