@@ -212,17 +212,20 @@ def __load_file(path):
 
         return data_matrix, data.shape[0]
 
+def cure_clustering(data, number_of_clusters, alpha, c):
+    cure = Cure(data, number_of_clusters, alpha, c)
+    return cure.cure_clustering()
+
 
 if __name__ == '__main__':
+    
     file_name = str(sys.argv[1])
     number_of_clusters = int(sys.argv[2])
     alpha = float(sys.argv[3])
     c = int(sys.argv[4])
 
     data, length = __load_file(file_name)
-
-    cure = Cure(data, number_of_clusters, alpha, c)
-    list_of_labels = cure.cure_clustering()
+    list_of_labels = cure_clustering(data, number_of_clusters, alpha, c)
 
 for i in range(0, len(list_of_labels)):
     print list_of_labels[i]
