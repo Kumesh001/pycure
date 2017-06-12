@@ -1,8 +1,6 @@
 import numpy as np
 import sys
-from copy import deepcopy
 from scipy.io import arff
-import matplotlib.pyplot as plt
 from scipy.spatial import KDTree
 from scipy.spatial import distance
 
@@ -77,8 +75,6 @@ class Cure:
             for rep in cluster_w.rep:
                  tree_data = np.concatenate((tree_data, rep))
 
-            print tree_data
-
             self.KDTree = KDTree(np.matrix(tree_data),leafsize = 50)
 
             # select arbitrary element from the heap
@@ -149,7 +145,7 @@ class Cure:
                     maxPoint = point
 
             if not any((maxPoint == x).all() for x in tmpSet):
-            	tmpSet.append(maxPoint)
+                tmpSet.append(maxPoint)
 
         for i in xrange(0, len(tmpSet)):
             # Smaller alpha shrinks the scattered points and favors elongated clusters
@@ -182,10 +178,6 @@ class Cure:
                         distance = query[0][0][i]
                         closest_rep = temp_rep
 
-        # for clusterz in self.Heap:
-        # for point in clusterz.rep:
-        # if (point == closest_rep).all():
-        # return (distance, clusterz)
         for point in merged_cluster.rep:
             tet = np.squeeze(np.asarray(point))
             if(tet == closest_rep).all():
@@ -202,12 +194,6 @@ class Cure:
 
 
 def __load_file(path):
-    """
-    Load a data set from path. Data set must be arff format.
-    
-    :param path: path to the data set
-    :return: a numpy-matrix. each column represents an attribute; each row a data item
-    """
     data, meta = arff.loadarff(open(path, 'r'))
     if data.shape == (0,):
         return np.empty((0, len(meta._attributes))), 0
@@ -233,4 +219,6 @@ if __name__ == '__main__':
 
     cure = Cure(data, number_of_clusters, alpha, c)
     list_of_labels = cure.cure_clustering()
-    print(str(list_of_labels))
+
+for i in range(0, len(list_of_labels)):
+    print list_of_labels[i]
