@@ -4,6 +4,7 @@ from scipy.io import arff
 from scipy.spatial import KDTree
 from scipy.spatial import distance
 
+# http://www-users.cs.umn.edu/~han/dmclass/cure.pdf
 
 class Cluster:
     def __init__(self, shape, point=None):
@@ -68,6 +69,7 @@ class Cure:
 
             tree_data = np.empty(shape=(0, self.shape[1]))
 
+            # removing old representatives and adding representatives for new cluster
             for cluster in self.Heap:
                 for rep in cluster.rep:
                     tree_data = np.concatenate((tree_data, rep))
@@ -111,6 +113,7 @@ class Cure:
             self.Heap.append(cluster_w)
             self.Heap.sort(key=lambda x: x.distance_closest, reverse=False)
 
+        # finding clusterlabels relative to input data
         list_of_labels = []
         i = 0
         for c in self.Heap:
@@ -151,9 +154,6 @@ class Cure:
                 tmpSet.append(maxPoint)
         # calculate new representation points for merged_cluster with maxpoints
         for i in xrange(0, len(tmpSet)):
-            # Smaller alpha shrinks the scattered points and favors elongated clusters
-            # large alph-> scattered points get closer to mean,  cluster tend to be more compact
-            # merged_cluster.rep.insert(i, (tmpSet[i] + (merged_cluster.center - tmpSet[i]) * self.alpha))
             merged_cluster.rep = np.concatenate((merged_cluster.rep ,(tmpSet[i] + (merged_cluster.center - tmpSet[i]) * self.alpha)))
 
         return merged_cluster
@@ -169,9 +169,11 @@ class Cure:
         distance = dist
         closest_rep = []
 
+        # getting c+1 representatives to find closest different cluster 
         for representative in cluster.rep:
             query = self.KDTree.query(representative, self.c+1, 0, 2)
 
+        # finding closest point
         for i in range(0, self.c+1):
             if(query[0][0][i] < float('inf')):
                 temp_rep = self.KDTree.data[query[1][0][i]]
@@ -182,11 +184,13 @@ class Cure:
                         distance = query[0][0][i]
                         closest_rep = temp_rep
 
+        # checking if cluster is the new cluster
         for point in merged_cluster.rep:
             tet = np.squeeze(np.asarray(point))
             if(tet == closest_rep).all():
                 return (distance, merged_cluster)
 
+        # finding cluster that owns the closest point
         for clusterz in self.Heap:
             for point in clusterz.rep:
                 tet = np.squeeze(np.asarray(point))
@@ -218,10 +222,17 @@ def cure_clustering(data, number_of_clusters, alpha, c):
 
 
 if __name__ == '__main__':
-    
+
     file_name = str(sys.argv[1])
+
+    # number of clusters
     number_of_clusters = int(sys.argv[2])
+
+    # Smaller alpha shrinks the scattered points and favors elongated clusters
+    # large alph-> scattered points get closer to mean,  cluster tend to be more compact
     alpha = float(sys.argv[3])
+
+    # number of representatives per cluster
     c = int(sys.argv[4])
 
     data, length = __load_file(file_name)
