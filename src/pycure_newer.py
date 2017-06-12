@@ -130,10 +130,12 @@ class Cure:
 
     def merge_cluster(self, cluster1, cluster2):
         merged_cluster = self.union_func(cluster1, cluster2)
+        # calculate new mean of merged_cluster
         merged_cluster.center = (len(cluster1.points) * cluster1.center + len(cluster2.points) * cluster2.center) / (
         len(cluster1.points) + len(cluster2.points))
         tmpSet = []
         merged_cluster.rep = np.empty(shape=(0, self.shape[1]))
+        # choose c maxpoints for later represantetives
         for i in range(0, self.c):
             maxDist = 0
             maxPoint = []
@@ -150,7 +152,7 @@ class Cure:
 
             if not any((maxPoint == x).all() for x in tmpSet):
             	tmpSet.append(maxPoint)
-
+        # calculate new representation points for merged_cluster
         for i in xrange(0, len(tmpSet)):
             # Smaller alpha shrinks the scattered points and favors elongated clusters
             # large alph-> scattered points get closer to mean,  cluster tend to be more compact
@@ -159,6 +161,7 @@ class Cure:
 
         return merged_cluster
 
+    #calculate the union of 2 clusters
     def union_func(self, cluster1, cluster2):
         union_cluster = Cluster(shape=self.shape)
         union_cluster.points=np.append(cluster1.points, cluster2.points, axis=0)
