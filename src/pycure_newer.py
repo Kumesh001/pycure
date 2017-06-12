@@ -125,11 +125,14 @@ class Cure:
 
 
     def merge_cluster(self, cluster1, cluster2):
+        # merge points of cluster1 and cluster2
         merged_cluster = self.union_func(cluster1, cluster2)
+        # calculate new mean of new cluster
         merged_cluster.center = (len(cluster1.points) * cluster1.center + len(cluster2.points) * cluster2.center) / (
         len(cluster1.points) + len(cluster2.points))
         tmpSet = []
         merged_cluster.rep = np.empty(shape=(0, self.shape[1]))
+        # generate c maximum points 
         for i in range(0, self.c):
             maxDist = 0
             maxPoint = []
@@ -139,14 +142,14 @@ class Cure:
 
                 else:
                     tmpDist = min([self.distance_func(point, p) for p in tmpSet])
-
+                # point is maxpoint if this is true
                 if minDist >= maxDist:
                     maxDist = minDist
                     maxPoint = point
 
             if not any((maxPoint == x).all() for x in tmpSet):
                 tmpSet.append(maxPoint)
-        # calculate new representation points for merged_cluster
+        # calculate new representation points for merged_cluster with maxpoints
         for i in xrange(0, len(tmpSet)):
             # Smaller alpha shrinks the scattered points and favors elongated clusters
             # large alph-> scattered points get closer to mean,  cluster tend to be more compact
