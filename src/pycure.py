@@ -98,13 +98,9 @@ class Cure:
                         # get closest element to cluster with maximum distance
                         (cluster.distance_closest, cluster.closest) = self.closest_cluster(cluster, cluster_w, dist)
 
-                    if (cluster.closest is None):
-                        cluster.closest = cluster_w
-                        cluster.distance_closest = dist
-
                     else:
                         cluster.closest = cluster_w
-                        cluster.distance_closest = distance
+                        cluster.distance_closest = dist
 
                 elif (cluster.distance_closest > dist):
                     cluster.closest = cluster_w
@@ -114,14 +110,18 @@ class Cure:
             self.Heap.sort(key=lambda x: x.distance_closest, reverse=False)
 
         # finding clusterlabels relative to input data
-        list_of_labels = []
+        list_of_labels = [-999] * len(data)
+
         i = 0
+
         for c in self.Heap:
             for p in c.points:
+                j = 0
                 for row in self.data:
                     tet = np.squeeze(np.asarray(p))
                     if(tet == row).all():
-                        list_of_labels.append(i)
+                        list_of_labels[j] = i
+                    j+=1
             i+=1
 
         return list_of_labels
@@ -218,7 +218,7 @@ def __load_file(path):
 
 def cure_clustering(data, number_of_clusters, alpha, c):
     cure = Cure(data, number_of_clusters, alpha, c)
-    return cure.cure_clustering()
+    return cure.cure_clustering()[:len(data)]
 
 
 if __name__ == '__main__':
